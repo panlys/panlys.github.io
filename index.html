@@ -1,143 +1,192 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vortex Biotech | Device Health</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0a0a0a;
-            color: white;
-            overflow: hidden;
-        }
+import React, { useState, useEffect, useMemo } from 'react';
+import { Settings, Info, AlertTriangle, CheckCircle, Wifi, Activity, ShieldCheck, Zap } from 'lucide-react';
 
-        .triangle-container {
-            filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.2));
-            transition: all 0.5s ease-in-out;
-        }
+/**
+ * VORTEX BIOTECH - PREMIUM DEVICE HEALTH INTERFACE
+ * Designed for HNWIs and Facility Managers.
+ * Features: High-contrast visuals, atmospheric light modeling, and 10s polling simulation.
+ */
 
-        .glow-active { filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.6)); }
-        .glow-service { filter: drop-shadow(0 0 30px rgba(245, 158, 11, 0.6)); }
-        .glow-offline { filter: drop-shadow(0 0 30px rgba(239, 68, 68, 0.6)); }
+const App = () => {
+  // State: 'healthy' | 'service' | 'offline'
+  const [status, setStatus] = useState('healthy');
+  const [lastSync, setLastSync] = useState(new Date());
+  const [syncProgress, setSyncProgress] = useState(0);
+  const [isSyncing, setIsSyncing] = useState(false);
 
-        /* Toblerone Shape Simulation */
-        .toblerone {
-            width: 0;
-            height: 0;
-            border-left: 100px solid transparent;
-            border-right: 100px solid transparent;
-            border-bottom: 173px solid currentColor;
-            transition: border-bottom-color 0.5s ease;
-        }
-    </style>
-</head>
-<body class="flex flex-col items-center justify-between min-h-screen p-8">
+  // Sync / Heartbeat Simulation Logic
+  useEffect(() => {
+    const syncInterval = setInterval(() => {
+      setIsSyncing(true);
+      setSyncProgress(0);
+      
+      // Simulate network delay
+      setTimeout(() => {
+        setLastSync(new Date());
+        setIsSyncing(false);
+        setSyncProgress(100);
+      }, 800);
+    }, 10000);
 
-    <div class="w-full flex justify-between items-start pt-4">
-        <div>
-            <h1 class="text-xl font-bold tracking-tighter italic">VORTEX</h1>
-            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Biotech Systems</p>
+    // Initial progress bar animation setup
+    setTimeout(() => setSyncProgress(100), 100);
+
+    return () => clearInterval(syncInterval);
+  }, []);
+
+  // Theme Definitions (Inspired by vortexbiotech.it)
+  const theme = useMemo(() => {
+    const themes = {
+      healthy: {
+        color: '#00F2B5', // Vortex Signature Mint
+        glow: 'rgba(0, 242, 181, 0.25)',
+        label: 'ACTIVE',
+        desc: 'Atmospheric Purification Optimized',
+        icon: <ShieldCheck className="w-5 h-5" style={{ color: '#00F2B5' }} />,
+        dotClass: 'bg-[#00F2B5]',
+        glowClass: 'shadow-[0_0_50px_rgba(0,242,181,0.5)]'
+      },
+      service: {
+        color: '#FFB800', // Amber Gold
+        glow: 'rgba(255, 184, 0, 0.25)',
+        label: 'SERVICE',
+        desc: 'Maintenance Cycle Recommended',
+        icon: <AlertTriangle className="w-5 h-5" style={{ color: '#FFB800' }} />,
+        dotClass: 'bg-[#FFB800]',
+        glowClass: 'shadow-[0_0_50px_rgba(255,184,0,0.5)]'
+      },
+      offline: {
+        color: '#FF4B4B', // Crimson Red
+        glow: 'rgba(255, 75, 75, 0.25)',
+        label: 'OFFLINE',
+        desc: 'System Communication Interrupted',
+        icon: <Wifi className="w-5 h-5" style={{ color: '#FF4B4B' }} />,
+        dotClass: 'bg-[#FF4B4B]',
+        glowClass: 'shadow-[0_0_50px_rgba(255,75,75,0.5)]'
+      }
+    };
+    return themes[status];
+  }, [status]);
+
+  const toggleStatus = () => {
+    const states = ['healthy', 'service', 'offline'];
+    const nextIndex = (states.indexOf(status) + 1) % states.length;
+    setStatus(states[nextIndex]);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#020202] text-white flex flex-col items-center p-6 font-sans overflow-hidden select-none">
+      
+      {/* Background Radial Ambiance */}
+      <div 
+        className="fixed inset-0 pointer-events-none transition-colors duration-1000 ease-in-out"
+        style={{ 
+          background: `radial-gradient(circle at 50% 40%, ${theme.glow} 0%, transparent 65%)` 
+        }}
+      />
+
+      {/* Header Section */}
+      <header className="w-full max-w-md flex justify-between items-start z-20 pt-4">
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-black tracking-tighter leading-none text-white">VORTEX</h1>
+          <span className="text-[9px] tracking-[0.4em] text-white/40 uppercase font-bold mt-1">Biotech Systems</span>
         </div>
-        <div class="text-right">
-            <p id="location-name" class="text-sm font-medium">Executive Office</p>
-            <p id="last-update" class="text-[10px] text-gray-500 italic">Syncing...</p>
+        <div className="text-right">
+          <div className="flex items-center justify-end gap-2 mb-1">
+            <span className="text-[11px] font-semibold text-white/70 uppercase tracking-wider">Executive Office</span>
+            <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${theme.dotClass} ${theme.glowClass}`} />
+          </div>
+          <p className="text-[9px] text-white/20 uppercase tracking-[0.1em]">Unit VT-0922 • London NW</p>
         </div>
-    </div>
+      </header>
 
-    <div class="flex flex-col items-center justify-center flex-1 w-full">
-        <div id="status-glow" class="triangle-container mb-8 transition-all duration-1000">
-            <div id="main-triangle" class="toblerone text-emerald-500"></div>
-        </div>
-        
-        <div class="text-center">
-            <h2 id="status-text" class="text-4xl font-light tracking-widest uppercase mb-2 text-emerald-500">Active</h2>
-            <div class="flex items-center justify-center gap-2">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span id="status-dot" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <p id="sub-status" class="text-xs text-gray-400 font-medium tracking-wide">AIR PURIFICATION OPTIMIZED</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-4 w-full max-w-sm mb-12">
-        <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
-            <p class="text-[10px] text-gray-500 uppercase mb-1">LED Intensity</p>
-            <p class="text-lg font-semibold" id="val-intensity">98.2%</p>
-        </div>
-        <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
-            <p class="text-[10px] text-gray-500 uppercase mb-1">Fan Speed</p>
-            <p class="text-lg font-semibold" id="val-fan">2400 RPM</p>
-        </div>
-        <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
-            <p class="text-[10px] text-gray-500 uppercase mb-1">Uptime</p>
-            <p class="text-lg font-semibold" id="val-uptime">1,240h</p>
-        </div>
-        <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
-            <p class="text-[10px] text-gray-500 uppercase mb-1">Efficiency</p>
-            <p class="text-lg font-semibold" id="val-efficiency">High</p>
-        </div>
-    </div>
-
-    <div class="fixed bottom-4 left-4 right-4 bg-white/5 p-2 rounded-full flex justify-around text-[10px] uppercase font-bold tracking-tighter border border-white/10 backdrop-blur-md">
-        <button onclick="setStatus('healthy')" class="px-4 py-2 rounded-full text-emerald-500">Healthy</button>
-        <button onclick="setStatus('service')" class="px-4 py-2 rounded-full text-amber-500">Service</button>
-        <button onclick="setStatus('offline')" class="px-4 py-2 rounded-full text-red-500">Offline</button>
-    </div>
-
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-
-        function setStatus(state) {
-            const triangle = document.getElementById('main-triangle');
-            const glow = document.getElementById('status-glow');
-            const text = document.getElementById('status-text');
-            const sub = document.getElementById('sub-status');
-            const dot = document.getElementById('status-dot');
-
-            // Reset classes
-            glow.className = "triangle-container mb-8 transition-all duration-1000";
+      {/* Hero Visualizer */}
+      <main className="flex-1 flex flex-col items-center justify-center w-full z-10">
+        <div 
+          className="relative cursor-pointer transition-transform duration-500 active:scale-95 group"
+          onClick={toggleStatus}
+        >
+          {/* Atmospheric Bloom Layers using dynamic shadow utilities */}
+          <div className={`absolute inset-0 blur-[120px] opacity-25 scale-150 transition-colors duration-1000 ${theme.dotClass}`} />
+          <div className={`absolute inset-0 blur-[40px] opacity-40 transition-colors duration-1000 ${theme.dotClass}`} />
+          
+          {/* Toblerone (Triangular Tube) Indicator */}
+          <div className="relative">
+            <div 
+              className={`w-0 h-0 border-l-[90px] border-l-transparent border-r-[90px] border-r-transparent border-b-[156px] transition-all duration-1000 ease-in-out ${theme.glowClass}`}
+              style={{ borderBottomColor: theme.color }}
+            />
             
-            if (state === 'healthy') {
-                triangle.style.borderBottomColor = '#10b981';
-                glow.classList.add('glow-active');
-                text.innerText = "Active";
-                text.className = "text-4xl font-light tracking-widest uppercase mb-2 text-emerald-500";
-                sub.innerText = "AIR PURIFICATION OPTIMIZED";
-                dot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-500";
-            } else if (state === 'service') {
-                triangle.style.borderBottomColor = '#f59e0b';
-                glow.classList.add('glow-service');
-                text.innerText = "Service";
-                text.className = "text-4xl font-light tracking-widest uppercase mb-2 text-amber-500";
-                sub.innerText = "MAINTENANCE RECOMMENDED";
-                dot.className = "relative inline-flex rounded-full h-2 w-2 bg-amber-500";
-            } else {
-                triangle.style.borderBottomColor = '#ef4444';
-                glow.classList.add('glow-offline');
-                text.innerText = "Offline";
-                text.className = "text-4xl font-light tracking-widest uppercase mb-2 text-red-500";
-                sub.innerText = "SYSTEM HARDWARE ERROR";
-                dot.className = "relative inline-flex rounded-full h-2 w-2 bg-red-500";
-            }
-        }
+            {/* Specular Edge Highlights for Depth */}
+            <div className="absolute top-[50px] left-[-35px] w-[80px] h-[1px] bg-white/40 blur-[2px] rotate-[60deg]" />
+            <div className="absolute top-[50px] right-[-35px] w-[80px] h-[1px] bg-black/60 blur-[1px] -rotate-[60deg]" />
+            
+            {/* Internal "LED Filament" Glow */}
+            <div 
+              className={`absolute bottom-[10px] left-1/2 -translate-x-1/2 w-[3px] h-[110px] blur-[12px] transition-opacity duration-1000 ${status === 'healthy' ? 'opacity-80' : 'opacity-0'}`}
+              style={{ backgroundColor: theme.color }}
+            />
+          </div>
+        </div>
 
-        // Simulating the 10s Update
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('last-update').innerText = "Last Sync: " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        }
+        {/* Status Messaging */}
+        <div className="mt-20 text-center space-y-4">
+          <h2 
+            className="text-6xl font-extralight tracking-[0.25em] uppercase transition-colors duration-700 leading-none"
+            style={{ color: theme.color }}
+          >
+            {theme.label}
+          </h2>
+          <div className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-white/[0.04] border border-white/5 backdrop-blur-xl">
+            {theme.icon}
+            <span className="text-[10px] tracking-[0.2em] uppercase text-white/60 font-semibold">
+              {theme.desc}
+            </span>
+          </div>
+        </div>
+      </main>
 
-        setInterval(updateTime, 10000);
-        updateTime();
-        setStatus('healthy');
-    </script>
-</body>
-</html>
+      {/* Professional Metrics Grid */}
+      <section className="w-full max-w-md grid grid-cols-2 gap-4 mb-12 z-20">
+        <MetricItem label="Air Quality" value="Optimized" icon={<Activity size={12}/>} themeColor={theme.color} />
+        <MetricItem label="LED Intensity" value="99.4%" icon={<Zap size={12}/>} themeColor={theme.color} />
+        <MetricItem label="Run Time" value="2,480 hrs" icon={<Info size={12}/>} themeColor={theme.color} />
+        <MetricItem label="Temp" value="21.5°C" icon={<Settings size={12}/>} themeColor={theme.color} />
+      </section>
+
+      {/* Sync Status / Progress Bar */}
+      <footer className="w-full max-w-md pb-6 z-20 px-2">
+        <div className="flex flex-col gap-3">
+          <div className="flex justify-between items-center text-[9px] uppercase tracking-[0.3em] font-bold">
+            <span className="text-white/30 italic">
+              {isSyncing ? 'Syncing with Cloud...' : `Status Verified: ${lastSync.toLocaleTimeString([], { hour12: false })}`}
+            </span>
+            <span className="text-white/20">v2.1.4-Dynamic</span>
+          </div>
+          <div className="w-full h-[1.5px] bg-white/[0.03] rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-white/20 transition-all duration-[9400ms] ease-linear"
+              style={{ width: `${syncProgress}%` }}
+            />
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  );
+};
+
+// Polished sub-component for health metrics
+const MetricItem = ({ label, value, icon, themeColor }) => (
+  <div className="group bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 backdrop-blur-3xl p-5 rounded-[2.5rem] flex flex-col gap-1.5 transition-all duration-500">
+    <div className="flex items-center gap-2">
+      <div className="opacity-50 group-hover:opacity-100 transition-opacity" style={{ color: themeColor }}>
+        {icon}
+      </div>
+      <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-white/30">{label}</span>
+    </div>
+    <span className="text-xl font-light tracking-tight text-white/90">{value}</span>
+  </div>
+);
+
+export default App;
