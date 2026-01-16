@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Vortex Biotech | Device Health</title>
-    <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;700&display=swap');
+
         :root {
             --vortex-mint: #00F2B5;
             --vortex-amber: #FFB800;
@@ -21,55 +20,66 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Using dvh (Dynamic Viewport Height) so the layout fills the screen and does not scroll */
         html, body {
             margin: 0;
             padding: 0;
-            background-color: #020202;
+            background-color: #030303;
             color: white;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            height: 100dvh; 
+            height: 100dvh;
             width: 100vw;
-            overflow: hidden; /* Lock scroll so layout stays fixed within the screen */
-            position: fixed; /* Prevent rubber-banding on iOS */
+            overflow: hidden;
+            position: fixed;
         }
 
-        /* Atmospheric Glow Background */
         .ambient-glow {
             position: fixed;
-            top: -10%;
-            left: 50%;
-            transform: translateX(-50%);
+            inset: -20% -10% auto;
             width: 160vw;
-            height: 100dvh;
+            height: 110dvh;
             border-radius: 100%;
-            filter: blur(140px);
+            filter: blur(180px);
             opacity: 0.15;
             z-index: 0;
             transition: background-color 1.2s ease;
             pointer-events: none;
         }
 
-        /* Toblerone Shape Styling */
+        .liquid-orb {
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border-radius: 40% 60% 45% 55% / 55% 45% 60% 40%;
+            background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 55%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08), transparent 60%);
+            opacity: 0.35;
+            filter: blur(8px);
+            animation: float 16s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-30px, -20px) rotate(0deg); }
+            50% { transform: translate(20px, 30px) rotate(8deg); }
+        }
+
         .toblerone {
             width: 0;
             height: 0;
-            border-left: clamp(60px, 10vw, 100px) solid transparent;
-            border-right: clamp(60px, 10vw, 100px) solid transparent;
-            border-bottom: clamp(104px, 17vw, 173px) solid currentColor;
+            border-left: clamp(70px, 11vw, 120px) solid transparent;
+            border-right: clamp(70px, 11vw, 120px) solid transparent;
+            border-bottom: clamp(120px, 19vw, 190px) solid currentColor;
             filter: drop-shadow(0 0 60px rgba(0, 242, 181, 0.5));
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
-        /* Glass Highlight for 3D effect */
         .toblerone::after {
             content: '';
             position: absolute;
-            top: 40%;
-            left: -20%;
-            width: 60%;
-            height: 1px;
+            top: 42%;
+            left: -30%;
+            width: 70%;
+            height: 2px;
             background: rgba(255, 255, 255, 0.2);
             transform: rotate(60deg);
             filter: blur(1px);
@@ -82,82 +92,150 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Heartbeat Animation */
         @keyframes heartbeat {
             0% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.02); opacity: 0.85; }
             100% { transform: scale(1); opacity: 1; }
         }
+
         .anim-pulse { animation: heartbeat 4s infinite ease-in-out; }
+
+        .status-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+        }
+
+        .floating-panel {
+            background: rgba(8, 8, 10, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(30px);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .panel-button {
+            transition: all 0.3s ease;
+        }
+
+        .panel-button.active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        .service-button {
+            background: linear-gradient(120deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .status-ring {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: absolute;
+            inset: 50% auto auto 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.5;
+            animation: heartbeat 4s infinite ease-in-out;
+        }
+
+        .data-wave {
+            width: 320px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            opacity: 0.3;
+            animation: pulse 2.8s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scaleX(0.8); opacity: 0.2; }
+            50% { transform: scaleX(1); opacity: 0.5; }
+        }
+
+        @media (max-width: 640px) {
+            .data-wave { width: 200px; }
+            .status-ring { width: 150px; height: 150px; }
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center">
 
     <div id="ambient" class="ambient-glow bg-[#00F2B5]"></div>
 
-    <!-- Main Container: fixed to viewport height so there is no scroll -->
-    <div class="relative z-10 w-full h-[100dvh] max-w-5xl mx-auto flex flex-col p-6 sm:p-10 md:p-12 lg:p-16 justify-between items-center safe-area-inset">
-        
-        <!-- Header -->
+    <div class="relative z-10 w-full h-[100dvh] max-w-5xl mx-auto flex flex-col px-6 sm:px-10 md:px-12 lg:px-16 py-6 sm:py-10 justify-between items-center safe-area-inset">
         <header class="w-full flex flex-row justify-between items-start pt-safe">
             <div class="flex flex-col items-start text-left">
                 <h1 class="text-2xl sm:text-3xl font-black tracking-tighter leading-none text-white">VORTEX</h1>
-                <span id="brand-sub" class="text-[8px] sm:text-[10px] tracking-[0.45em] text-[#00F2B5] font-bold uppercase transition-colors duration-500">Biotech Systems</span>
+                <span id="brand-sub" class="text-[8px] sm:text-[10px] tracking-[0.45em] text-[#00F2B5] font-bold uppercase transition-colors duration-500">biotech</span>
             </div>
             <div class="text-right flex flex-col items-end">
-                <p class="text-[10px] sm:text-xs font-semibold opacity-90 uppercase tracking-widest">Executive Office</p>
-                <p class="text-[8px] sm:text-[10px] text-white/30 tracking-widest uppercase mt-0.5">Unit VT-0922 • London NW</p>
+                <p class="text-[10px] sm:text-xs font-semibold opacity-90 uppercase tracking-widest">Executive Suite</p>
+                <p class="text-[8px] sm:text-[10px] text-white/30 tracking-widest uppercase mt-0.5">22 Grosvenor Sq • London W1</p>
             </div>
         </header>
 
-        <!-- Hero Area -->
-        <main class="w-full flex-grow flex flex-col items-center justify-center cursor-pointer" onclick="cycleStatus()">
-            <div id="glow-container" class="anim-pulse mb-8 sm:mb-12">
-                <div id="led-tube" class="toblerone text-[#00F2B5] mx-auto"></div>
+        <main class="w-full flex-grow flex flex-col items-center justify-center">
+            <div class="relative flex items-center justify-center">
+                <div class="liquid-orb"></div>
+                <div class="status-ring"></div>
+                <div id="glow-container" class="anim-pulse mb-8 sm:mb-10 relative z-10">
+                    <div id="led-tube" class="toblerone text-[#00F2B5] mx-auto"></div>
+                </div>
             </div>
-            
+
+            <div class="data-wave mt-2 mb-6"></div>
+
             <div class="text-center space-y-4">
-                <h2 id="status-label" class="text-6xl sm:text-8xl md:text-9xl font-extralight tracking-[0.2em] uppercase text-[#00F2B5] leading-none transition-colors duration-700">Active</h2>
-                <div class="flex items-center justify-center gap-3 bg-white/[0.04] px-6 py-3 rounded-full border border-white/5 backdrop-blur-lg mx-auto inline-flex shadow-2xl">
+                <h2 id="status-label" class="text-5xl sm:text-7xl md:text-8xl font-extralight tracking-[0.25em] uppercase text-[#00F2B5] leading-none transition-colors duration-700">Active</h2>
+                <div class="status-chip flex items-center justify-center gap-3 px-6 py-3 rounded-full mx-auto inline-flex shadow-2xl">
                     <i data-lucide="shield-check" id="status-icon" class="w-4 h-4 sm:w-5 sm:h-5 text-[#00F2B5]/70 transition-colors duration-500"></i>
                     <p id="status-desc" class="text-[9px] sm:text-[10px] md:text-xs text-white/60 font-medium tracking-[0.3em] uppercase">Atmospheric Purification Optimized</p>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.35em] text-white/40">
+                        <i data-lucide="map-pin" class="w-3 h-3"></i>
+                        <span>Executive Office • Floor 18</span>
+                    </div>
+                    <div id="service-cta" class="hidden">
+                        <button class="service-button px-6 py-3 rounded-full text-[10px] sm:text-xs uppercase tracking-[0.35em] font-semibold text-white/80">
+                            Request White-Glove Service
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
 
-        <!-- Metrics Grid: Scaled down slightly for mobile to fit without scroll -->
-        <section class="w-full grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
+        <section class="w-full grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-10">
             <div class="metric-card p-4 sm:p-6 rounded-[2rem] flex flex-col items-center text-center">
                 <div class="flex items-center gap-2 mb-1 opacity-40">
                     <i data-lucide="activity" class="w-3 h-3"></i>
-                    <span class="text-[7px] sm:text-[9px] uppercase tracking-widest font-bold">Air Flow</span>
+                    <span class="text-[7px] sm:text-[9px] uppercase tracking-widest font-bold">Device Pulse</span>
                 </div>
-                <p class="text-sm sm:text-xl font-light tracking-tight">Optimized</p>
+                <p id="metric-pulse" class="text-sm sm:text-xl font-light tracking-tight">Stable</p>
+            </div>
+            <div class="metric-card p-4 sm:p-6 rounded-[2rem] flex flex-col items-center text-center">
+                <div class="flex items-center gap-2 mb-1 opacity-40">
+                    <i data-lucide="wind" class="w-3 h-3"></i>
+                    <span class="text-[7px] sm:text-[9px] uppercase tracking-widest font-bold">Outdoor AQI</span>
+                </div>
+                <p id="metric-aqi" class="text-sm sm:text-xl font-light tracking-tight">12 · Pure</p>
+            </div>
+            <div class="metric-card p-4 sm:p-6 rounded-[2rem] flex flex-col items-center text-center">
+                <div class="flex items-center gap-2 mb-1 opacity-40">
+                    <i data-lucide="droplets" class="w-3 h-3"></i>
+                    <span class="text-[7px] sm:text-[9px] uppercase tracking-widest font-bold">Room Health</span>
+                </div>
+                <p id="metric-room" class="text-sm sm:text-xl font-light tracking-tight">99.4%</p>
             </div>
             <div class="metric-card p-4 sm:p-6 rounded-[2rem] flex flex-col items-center text-center">
                 <div class="flex items-center gap-2 mb-1 opacity-40">
                     <i data-lucide="zap" class="w-3 h-3"></i>
-                    <span class="text-[7px] sm:text-[9px] uppercase tracking-widest font-bold">Intensity</span>
+                    <span class="text-[7px] sm:text-[9px] uppercase tracking-widest font-bold">UV Intensity</span>
                 </div>
-                <p class="text-sm sm:text-xl font-light tracking-tight">99.4%</p>
-            </div>
-            <div class="metric-card p-4 sm:p-6 rounded-[2rem] flex flex-col items-center text-center">
-                <div class="flex items-center gap-2 mb-1 opacity-40">
-                    <i data-lucide="info" class="w-3 h-3"></i>
-                    <span class="text-[7px] sm:text-[9px] uppercase tracking-widest font-bold">Uptime</span>
-                </div>
-                <p class="text-sm sm:text-xl font-light tracking-tight">2,480h</p>
-            </div>
-            <div class="metric-card p-4 sm:p-6 rounded-[2rem] flex flex-col items-center text-center">
-                <div class="flex items-center gap-2 mb-1 opacity-40">
-                    <i data-lucide="settings" class="w-3 h-3"></i>
-                    <span class="text-[7px] sm:text-[9px] uppercase tracking-widest font-bold">Ambient</span>
-                </div>
-                <p class="text-sm sm:text-xl font-light tracking-tight">21.5°C</p>
+                <p id="metric-intensity" class="text-sm sm:text-xl font-light tracking-tight">99.9%</p>
             </div>
         </section>
 
-        <!-- Footer / Cloud Sync -->
         <footer class="w-full pb-safe flex flex-col gap-4">
             <div class="flex justify-between items-center text-[8px] sm:text-[9px] font-bold tracking-[0.4em] uppercase opacity-40 px-2">
                 <span id="sync-text">Secure Cloud Sync</span>
@@ -169,13 +247,54 @@
         </footer>
     </div>
 
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
+        <div class="floating-panel flex items-center gap-2 px-3 py-2 rounded-full">
+            <button class="panel-button px-4 py-2 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-semibold text-white/70" data-state="healthy">Active</button>
+            <button class="panel-button px-4 py-2 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-semibold text-white/70" data-state="service">Moderate</button>
+            <button class="panel-button px-4 py-2 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-semibold text-white/70" data-state="offline">Critical</button>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
 
         const THEMES = {
-            healthy: { color: '#00F2B5', label: 'ACTIVE', desc: 'Purification Optimized', icon: 'shield-check' },
-            service: { color: '#FFB800', label: 'SERVICE', desc: 'Maintenance Required', icon: 'alert-triangle' },
-            offline: { color: '#FF4B4B', label: 'OFFLINE', desc: 'Hardware Error', icon: 'wifi-off' }
+            healthy: {
+                color: '#00F2B5',
+                label: 'ACTIVE',
+                desc: 'Purification Optimized',
+                icon: 'shield-check',
+                pulse: 'Stable',
+                aqi: '12 · Pure',
+                room: '99.4%',
+                intensity: '99.9%',
+                service: false,
+                cta: 'Request White-Glove Service'
+            },
+            service: {
+                color: '#FFB800',
+                label: 'MODERATE',
+                desc: 'Service Window Recommended',
+                icon: 'alert-triangle',
+                pulse: 'Attenuated',
+                aqi: '48 · Moderate',
+                room: '92.6%',
+                intensity: '91.2%',
+                service: true,
+                cta: 'Schedule Concierge Service'
+            },
+            offline: {
+                color: '#FF4B4B',
+                label: 'CRITICAL',
+                desc: 'Immediate Attention Required',
+                icon: 'siren',
+                pulse: 'Interrupted',
+                aqi: '67 · Elevated',
+                room: '78.8%',
+                intensity: '72.4%',
+                service: true,
+                cta: 'Request Emergency Response'
+            }
         };
 
         let currentStatus = 'healthy';
@@ -188,14 +307,31 @@
             const desc = document.getElementById('status-desc');
             const iconEl = document.getElementById('status-icon');
             const brandSub = document.getElementById('brand-sub');
+            const pulse = document.getElementById('metric-pulse');
+            const aqi = document.getElementById('metric-aqi');
+            const room = document.getElementById('metric-room');
+            const intensity = document.getElementById('metric-intensity');
+            const service = document.getElementById('service-cta');
+            const serviceButton = service.querySelector('button');
 
             tube.style.borderBottomColor = config.color;
-            tube.style.filter = `drop-shadow(0 0 60px ${config.color}88)`;
+            tube.style.filter = `drop-shadow(0 0 70px ${config.color}88)`;
             ambient.style.backgroundColor = config.color;
             label.innerText = config.label;
             label.style.color = config.color;
             desc.innerText = config.desc;
             brandSub.style.color = config.color;
+            pulse.innerText = config.pulse;
+            aqi.innerText = config.aqi;
+            room.innerText = config.room;
+            intensity.innerText = config.intensity;
+
+            if (config.service) {
+                service.classList.remove('hidden');
+                serviceButton.innerText = config.cta;
+            } else {
+                service.classList.add('hidden');
+            }
 
             const newIcon = document.createElement('i');
             newIcon.setAttribute('data-lucide', config.icon);
@@ -204,13 +340,22 @@
             newIcon.style.color = config.color;
             iconEl.parentNode.replaceChild(newIcon, iconEl);
             lucide.createIcons();
+
+            document.querySelectorAll('.panel-button').forEach((button) => {
+                const isActive = button.dataset.state === state;
+                button.classList.toggle('active', isActive);
+                button.style.backgroundColor = isActive ? config.color : 'transparent';
+                button.style.color = isActive ? '#060606' : 'rgba(255,255,255,0.7)';
+            });
         }
 
-        function cycleStatus() {
-            const states = ['healthy', 'service', 'offline'];
-            const idx = states.indexOf(currentStatus);
-            currentStatus = states[(idx + 1) % states.length];
-            setStatus(currentStatus);
+        function bindPanel() {
+            document.querySelectorAll('.panel-button').forEach((button) => {
+                button.addEventListener('click', () => {
+                    currentStatus = button.dataset.state;
+                    setStatus(currentStatus);
+                });
+            });
         }
 
         function heartbeat() {
@@ -227,9 +372,9 @@
 
         setInterval(heartbeat, 10000);
         heartbeat();
+        bindPanel();
         setStatus('healthy');
 
-        // Prevent typical touch-scrolling "bounce" on iOS
         document.body.addEventListener('touchmove', function(e) {
             e.preventDefault();
         }, { passive: false });
